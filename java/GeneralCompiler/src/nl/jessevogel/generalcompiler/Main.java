@@ -3,14 +3,11 @@ package nl.jessevogel.generalcompiler;
 public class Main {
 
     public static void main(String[] args) {
+        Interpreter interpreter = new Interpreter();
 
-        Scanner scanner = new Scanner("/Users/Jesse/Projects/generalcompiler/examples/test.txt");
+        interpreter.loadTokenTypes("/Users/jessetvogel/Projects/generalcompiler/examples/tokentypes.txt");
+        interpreter.interpret("/Users/jessetvogel/Projects/generalcompiler/examples/source.txt");
 
-        Character c;
-
-        while((c = scanner.next()) != null) {
-            c.print();
-        }
-
+        interpreter.printMessages();
     }
 }

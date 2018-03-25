@@ -1,0 +1,43 @@
+# Whitespace
+NEWLINE \n
+WHITESPACE [ \t]+
+
+# Comments
+COMMENT \/\/[^\n]*
+
+# Brackets
+BRACKET_CURLY_OPEN \{
+BRACKET_CURLY_CLOSE \}
+BRACKET_ROUND_OPEN \(
+BRACKET_ROUND_CLOSE \)
+BRACKET_SQUARE_OPEN \[
+BRACKET_SQUARE_CLOSE \]
+BRACKET_ANGLE_OPEN <
+BRACKET_ANGLE_CLOSE >
+
+# Operators
+EQUAL_TO =
+PLUS \+
+MINUS -
+ASTERIX \*
+DIVIDE \/
+PLUSPLUS \+\+
+MINUSMINUS --
+ARROW ->
+
+# Special characters
+SEMICOLON ;
+DOT \.
+COMMA ,
+
+# Keywords
+IF if
+ELSE else
+WHILE while
+FOR for
+
+# Literals
+INTEGER \d+
+
+# Identifiers
+IDENTIFIER [A-Za-z_]\w*

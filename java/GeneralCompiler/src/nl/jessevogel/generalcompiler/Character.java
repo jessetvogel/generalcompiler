@@ -1,20 +1,24 @@
 package nl.jessevogel.generalcompiler;
 
-public class Character {
+class Character {
 
-    public char character;
-    public String file;
-    public int line;
-    public int position;
+    char character;
+    String file;
+    int line;
+    int position;
 
-    public Character(int character, String file, int line, int position) {
+    Character(int character, String file, int line, int position) {
         this.character = (char) character;
         this.file = file;
         this.line = line;
         this.position = position;
     }
 
-    public void print() {
+    public String getPositionString() {
+        return "file " + file + " on " + (line + 1) + ":" + (position + 1);
+    }
+
+    void print() {
         System.out.println("File " + file + " on " + (line + 1) + ":" + (position + 1) + "\t" + character);
     }
 }

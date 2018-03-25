@@ -4,80 +4,76 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Scanner {
+class Scanner {
 
+    private Interpreter interpreter;
     private FileReader fileReader;
     private String file;
     private int currentLine;
     private int currentPosition;
     private Character currentCharacter;
 
-    public Scanner(String source) {
-        // Initialize
+    Scanner(Interpreter interpreter, String source) {
         try {
+            this.interpreter = interpreter;
             file = source;
             fileReader = new FileReader(new File(source));
             currentLine = 0;
             currentPosition = 0;
             currentCharacter = null;
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public Character next() {
+    Character next() {
         try {
             // Update current line and position
-            if(currentCharacter != null) {
-                if(newLine(currentCharacter)) {
-                    currentLine ++;
+            if (currentCharacter != null) {
+                if (newLine(currentCharacter)) {
+                    currentLine++;
                     currentPosition = 0;
-                }
-                else {
-                    currentPosition ++;
+                } else {
+                    currentPosition++;
                 }
             }
 
             // Read character
             int i = fileReader.read();
-            if(i == -1) return null;
+            if (i == -1) return null;
 
             // Return Character
             return (currentCharacter = new Character(i, file, currentLine, currentPosition));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public void close() {
+    void close() {
         try {
             fileReader.close();
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public String getFile() {
+    String getFile() {
         return file;
     }
 
-    public int getCurrentLine() {
+    int getCurrentLine() {
         return currentLine;
     }
 
-    public int getCurrentPosition() {
+    int getCurrentPosition() {
         return currentPosition;
     }
 
     private boolean newLine(Character character) {
         // TODO: what counts as newline?
-        if(character.character == '\n') return true;
+        if (character.character == '\n') return true;
 //        if(character.character == '\r') return true;
         return false;
     }
-
 }
