@@ -5,15 +5,23 @@ import java.util.regex.Pattern;
 
 class TokenType {
 
-    String identifier;
-    Pattern pattern;
+    String name;
+    private Pattern pattern;
 
-    TokenType(String identifier, String pattern) {
-        this.identifier = identifier;
-        this.pattern = Pattern.compile("^(" + pattern + ")");
+    TokenType(String name, String pattern) {
+        this.name = name;
+        try {
+            this.pattern = Pattern.compile("^(" + pattern + ")");
+        }
+        catch(Exception e) {
+            System.err.print("Invalid regex: " + pattern);
+            this.pattern = null;
+        }
     }
 
     int match(StringBuilder buffer) {
+        if(pattern == null) return 0;
+
         Matcher matcher = pattern.matcher(buffer);
         if (!matcher.find())
             return 0;

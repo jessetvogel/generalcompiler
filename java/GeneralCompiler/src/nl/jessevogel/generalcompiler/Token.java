@@ -1,26 +1,18 @@
 package nl.jessevogel.generalcompiler;
 
-public class Token {
+class Token {
 
-    private TokenType type;
-    private String value;
-    private Character start;
+    final TokenType type;
+    final String value;
+    final int index;
 
-    public Token(TokenType type, String value, Character start) {
+    Token(TokenType type, String value, int index) {
         this.type = type;
         this.value = value;
-        this.start = start;
+        this.index = index;
     }
 
-    public TokenType getType() {
-        return type;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void print() {
-        System.out.println("File " + start.file + " on " + (start.line + 1) + ":" + (start.position + 1) + " '" + value + "' (" + type.identifier + ")");
+    void print() {
+        System.out.println("Token of type '" + type.name + "' at index " + index + ": '" + value + "'");
     }
 }

@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class TokenTypeLoader {
+class GrammarLoader {
 
     private static final Pattern patternSkip = Pattern.compile("^\\s*(#.*)?$");
-    private static final Pattern patternDefinition = Pattern.compile("^([A-Za-z_]\\w*)\\s*::=\\s*(.*)$");
+    private static final Pattern patternDefinition = Pattern.compile("^([A-Za-z_]\\w*)\\s*::=\\s*(.*)\\s*$");
 
     private Grammar grammar;
 
-    TokenTypeLoader(Grammar grammar) {
+    GrammarLoader(Grammar grammar) {
         this.grammar = grammar;
     }
 
@@ -33,12 +33,23 @@ class TokenTypeLoader {
                 // Parse definitions
                 matcher = patternDefinition.matcher(line);
                 if (matcher.find()) {
-                    grammar.tokenTypes.add(new TokenType(matcher.group(1), matcher.group(2)));
+                    // Find definition type
+                    String typeName = matcher.group(1);
+                    NodeType type = grammar.getOrIntroduceType(typeName);
+
+                    // Find children types
+                    String[] childrenTypeNames = matcher.group(2).trim().split("\\s+");
+                    Rule rule = new Rule(type, childrenTypeNames.length);
+                    for (int i = 0; i < childrenTypeNames.length; ++i)
+                        rule.childrenTypes[i] = grammar.getOrIntroduceType(childrenTypeNames[i]);
+
+                    // Add rule to list
+                    grammar.rules.add(rule);
                     continue;
                 }
 
                 // Otherwise, give warning
-                System.err.println("Warning: invalid token type definition on line " + lineNumber + " of " + file);
+                System.err.println("Warning: invalid rule on line " + lineNumber + " of " + file);
             }
 
             br.close();

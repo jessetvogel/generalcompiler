@@ -1,29 +1,26 @@
 package nl.jessevogel.generalcompiler;
 
-import java.util.LinkedList;
-
 class Lexer {
 
-    private Interpreter interpreter;
+    private Grammar grammar;
     private Scanner scanner;
-    private LinkedList<Character> characterBuffer;
+    private int currentIndex;
     private StringBuilder stringBuffer;
 
-    Lexer(Interpreter interpreter, String source) {
-        this.interpreter = interpreter;
-        scanner = new Scanner(interpreter, source);
-        characterBuffer = new LinkedList<>();
+    Lexer(Grammar grammar, String source) {
+        this.grammar = grammar;
+        scanner = new Scanner(source);
+        currentIndex = 0;
         stringBuffer = new StringBuilder();
     }
 
     Token next() {
         // If current buffer is empty, read new buffer
         if (stringBuffer.length() == 0) {
-            Character character;
-            while ((character = scanner.next()) != null) {
-                characterBuffer.add(character);
-                stringBuffer.append(character.character);
-                if (character.character == '\n') break; // Stop buffer after newline
+            int character;
+            while ((character = scanner.next()) != -1) {
+                stringBuffer.append((char) character);
+                if (character == '\n') break; // Stop buffer after newline
             }
 
             // If current buffer is still empty, there is no next buffer, i.e. we are at the end of the file
@@ -31,10 +28,10 @@ class Lexer {
                 return null;
         }
 
+        // Find best token match
         TokenType bestMatchType = null;
         int bestMatchLength = 0;
-
-        for (TokenType type : interpreter.getTokenTypes()) {
+        for (TokenType type : grammar.tokenTypes) {
             int matchLength = type.match(stringBuffer);
             if (matchLength > bestMatchLength) {
                 bestMatchType = type;
@@ -42,14 +39,17 @@ class Lexer {
             }
         }
 
+        // If no match, give error
         if (bestMatchType == null) {
-            interpreter.addMessage("Error in " + characterBuffer.get(0).getPositionString() + ": Unknown token");
+            Scanner.Position position = scanner.getPosition(currentIndex);
+            System.err.println("Error in " + position.file + " at position " + position.line + ":" + position.position + ": Unknown token");
             return null;
         }
 
-        Token token = new Token(bestMatchType, stringBuffer.substring(0, bestMatchLength), characterBuffer.get(0));
-        characterBuffer.subList(0, bestMatchLength).clear();
+        // Return token
+        Token token = new Token(bestMatchType, stringBuffer.substring(0, bestMatchLength), currentIndex);
         stringBuffer.delete(0, bestMatchLength);
+        currentIndex += bestMatchLength;
         return token;
     }
 }

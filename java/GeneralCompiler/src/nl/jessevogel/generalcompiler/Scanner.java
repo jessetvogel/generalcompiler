@@ -3,77 +3,75 @@ package nl.jessevogel.generalcompiler;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 class Scanner {
 
-    private Interpreter interpreter;
     private FileReader fileReader;
     private String file;
-    private int currentLine;
-    private int currentPosition;
-    private Character currentCharacter;
+    private int currentIndex;
+    private List<Integer> lineIndices;
 
-    Scanner(Interpreter interpreter, String source) {
+    Scanner(String source) {
         try {
-            this.interpreter = interpreter;
             file = source;
             fileReader = new FileReader(new File(source));
-            currentLine = 0;
-            currentPosition = 0;
-            currentCharacter = null;
+            currentIndex = 0;
+            lineIndices = new ArrayList<>();
+            lineIndices.add(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    Character next() {
+    int next() {
         try {
-            // Update current line and position
-            if (currentCharacter != null) {
-                if (newLine(currentCharacter)) {
-                    currentLine++;
-                    currentPosition = 0;
-                } else {
-                    currentPosition++;
-                }
-            }
-
             // Read character
             int i = fileReader.read();
-            if (i == -1) return null;
+            if (i == -1) return -1;
 
-            // Return Character
-            return (currentCharacter = new Character(i, file, currentLine, currentPosition));
+            // Increment index and check for newlines
+            currentIndex ++;
+            if(newLine(i))
+                lineIndices.add(currentIndex);
+
+            // Return character
+            return i;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return -1;
         }
     }
 
-    void close() {
-        try {
-            fileReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    Position getPosition(int index) {
+        Position position = new Position();
+        position.file = file;
+        int n = lineIndices.size();
+        int line;
+        for(line = 0;line < n; ++ line) {
+            int lineIndex = lineIndices.get(line);
+            if(index < lineIndex) {
+                -- line;
+                break;
+            }
         }
+
+        position.line = line;
+        position.position = index - lineIndices.get(line);
+        return position;
     }
 
-    String getFile() {
-        return file;
-    }
-
-    int getCurrentLine() {
-        return currentLine;
-    }
-
-    int getCurrentPosition() {
-        return currentPosition;
-    }
-
-    private boolean newLine(Character character) {
+    private boolean newLine(int character) {
         // TODO: what counts as newline?
-        if (character.character == '\n') return true;
+        if (character == '\n') return true;
 //        if(character.character == '\r') return true;
         return false;
+    }
+
+    class Position {
+        String file;
+        int line;
+        int position;
     }
 }

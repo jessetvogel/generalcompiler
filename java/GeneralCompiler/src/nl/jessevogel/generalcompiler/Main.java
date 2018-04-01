@@ -3,11 +3,22 @@ package nl.jessevogel.generalcompiler;
 public class Main {
 
     public static void main(String[] args) {
-        Interpreter interpreter = new Interpreter();
+        // Load grammar
+        Grammar grammar = new Grammar();
+        grammar.loadTokenTypes("/Users/jessetvogel/Desktop/language.tokens");
+        grammar.loadGrammer("/Users/jessetvogel/Desktop/language.grammar");
+        grammar.print();
 
-        interpreter.loadTokenTypes("/Users/jessetvogel/Projects/generalcompiler/examples/tokentypes.txt");
-        interpreter.interpret("/Users/jessetvogel/Projects/generalcompiler/examples/source.txt");
+        // Create parser
+        Parser parser = new Parser(grammar);
 
-        interpreter.printMessages();
+        // Parse file
+        Node node = parser.parse(grammar.getOrIntroduceType("if_statement"), "/Users/jessetvogel/Desktop/source.txt");
+        if(node != null) {
+            node.print();
+        }
+        else {
+            System.out.println("Unable to parse!");
+        }
     }
 }
